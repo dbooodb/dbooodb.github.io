@@ -25,7 +25,7 @@
 <meta property="og:image" content="https://i.imgur.com/Gv5wNb1.gif">
 <meta property="og:image" content="https://i.imgur.com/MEpZVQO.gif">
 <meta property="og:image" content="https://i.imgur.com/8SOAK80.gif">
-<meta property="og:updated_time" content="2016-12-11T07:04:14.000Z">
+<meta property="og:updated_time" content="2016-12-25T17:44:18.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="乱写 | 内网穿透VPN搭建">
 <meta name="twitter:description" content="部门喜迁新居。山高皇帝远，独立运作，少了考勤的烦恼，大快人心。但网络比较头疼，电信由于众所周知的原因限制外网访问，需备齐材料备案开通。在行政人事眼里，只要能上网就能工作，备案的事情不上心。除了恋爱，研发部注定与人事部三观不合。唯有靠自己。
@@ -241,12 +241,21 @@
 </ul>
 <h3 id="外网服务器搭建"><a href="#外网服务器搭建" class="headerlink" title="外网服务器搭建"></a>外网服务器搭建</h3><p>外网服务器可以通过租用VPS获得。<br>操作系统可Linux或者Windows，Windows的Server端安装不介绍，一路next就OK，安装完成启动进去设置一个密码，就可以通过客户端远程管理。</p>
 <p>简单描述Linux的操作过程：</p>
-<p>&gt;<br>root@myworld:~/vpnserver# ./vpncmd<br>vpncmd command - SoftEther VPN Command Line Management Utility<br>SoftEther VPN Command Line Management Utility (vpncmd command)<br>Version 4.20 Build 9608   (English)<br>Compiled 2016/04/17 21:59:35 by yagi at pc30<br>Copyright (c) SoftEther VPN Project. All Rights Reserved.<br>&gt;<br>By using vpncmd program, the following can be achieved.<br>&gt;</p>
+<blockquote>
+<p>root@myworld:~/vpnserver# ./vpncmd<br>vpncmd command - SoftEther VPN Command Line Management Utility<br>SoftEther VPN Command Line Management Utility (vpncmd command)<br>Version 4.20 Build 9608   (English)<br>Compiled 2016/04/17 21:59:35 by yagi at pc30<br>Copyright (c) SoftEther VPN Project. All Rights Reserved.</p>
+<p>By using vpncmd program, the following can be achieved. </p>
 <ol>
 <li>Management of VPN Server or VPN Bridge </li>
 <li>Management of VPN Client</li>
-<li>Use of VPN Tools (certificate creation and Network Traffic Speed Test Tool)<br>&gt;<br>Select 1, 2 or 3: [在这里输入1]<br>&gt;<br>Specify the host name or IP address of the computer that the destination VPN Server or VPN Bridge is operating on.<br>By specifying according to the format ‘host name:port number’, you can also specify the port number.<br>(When the port number is unspecified, 443 is used.)<br>If nothing is input and the Enter key is pressed, the connection will be made to the port number 8888 of localhost (this computer).<br>Hostname of IP Address of Destination:[在这里敲回车键]<br>&gt;<br>If connecting to the server by Virtual Hub Admin Mode, please input the Virtual Hub name.<br>If connecting by server admin mode, please press Enter without inputting anything.<br>Specify Virtual Hub Name: [在这里敲回车键]<br>&gt;<br>Connection has been established with VPN Server “localhost” (port 443).You have administrator privileges for the entire VPN Server.<br>&gt;<br>VPN Server&gt;[输入ServerPasswordSet]<br>&gt;<br>ServerPasswordSet command - Set VPN Server Administrator PasswordPlease enter the password. To cancel press the Ctrl+D key.<br>Password: [输入你的密码]<br>Confirm input: [再次输入你的密码]</li>
+<li>Use of VPN Tools (certificate creation and Network Traffic Speed Test Tool)</li>
 </ol>
+<p>Select 1, 2 or 3: [在这里输入1]</p>
+<p>Specify the host name or IP address of the computer that the destination VPN Server or VPN Bridge is operating on.<br>By specifying according to the format ‘host name:port number’, you can also specify the port number.<br>(When the port number is unspecified, 443 is used.)<br>If nothing is input and the Enter key is pressed, the connection will be made to the port number 8888 of localhost (this computer).<br>Hostname of IP Address of Destination:[在这里敲回车键] </p>
+<p>If connecting to the server by Virtual Hub Admin Mode, please input the Virtual Hub name.<br>If connecting by server admin mode, please press Enter without inputting anything.<br>Specify Virtual Hub Name: [在这里敲回车键] </p>
+<p>Connection has been established with VPN Server “localhost” (port 443).You have administrator privileges for the entire VPN Server. </p>
+<p>VPN Server&gt;[输入ServerPasswordSet]</p>
+<p>ServerPasswordSet command - Set VPN Server Administrator PasswordPlease enter the password. To cancel press the Ctrl+D key.<br>Password: [输入你的密码]<br>Confirm input: [再次输入你的密码]</p>
+</blockquote>
 <p>好了，服务端的配置完成，接下来可以在Windows使用远程管理终端做更多复杂的配置了。</p>
 <p>使用Windows客户端连上刚刚新建的外网服务器，新建一个虚拟hub，并创建用户，例如user1.<br>配置IP地址：</p>
 <p><img src="https://i.imgur.com/CqWNFWI.gif" alt="IP地址配置"></p>
