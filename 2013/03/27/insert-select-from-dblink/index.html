@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script type="text/javascript">
+      var host = "www.dbooodb.com";
+      if ((host == window.location.host) && (window.location.protocol != "https:"))
+          window.location.protocol = "https";
+  </script>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>大数据量跨库查询优化 | dboOodb</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="最近负责一个大数量采集的项目开发，其中面临的最大问题是跨库查询插入性能比普通查询差不止一个数量级。  
+在单纯select的时候使用/*+ DRIVING_SITE(A) */提示，Oracle可以正常的在源库执行后返回结果，但是当加入insert into之后情况就变了，不仅仅执行计划的cost值变大，执行时间比原来长了许多。
+反复测试了很多的hint，在加入insert into之后都是无解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大数据量跨库查询优化">
+<meta property="og:url" content="https://www.dbooodb.com/2013/03/27/insert-select-from-dblink/index.html">
+<meta property="og:site_name" content="dboOodb">
+<meta property="og:description" content="最近负责一个大数量采集的项目开发，其中面临的最大问题是跨库查询插入性能比普通查询差不止一个数量级。  
+在单纯select的时候使用/*+ DRIVING_SITE(A) */提示，Oracle可以正常的在源库执行后返回结果，但是当加入insert into之后情况就变了，不仅仅执行计划的cost值变大，执行时间比原来长了许多。
+反复测试了很多的hint，在加入insert into之后都是无解。">
+<meta property="og:updated_time" content="2016-12-27T19:09:23.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="大数据量跨库查询优化">
+<meta name="twitter:description" content="最近负责一个大数量采集的项目开发，其中面临的最大问题是跨库查询插入性能比普通查询差不止一个数量级。  
+在单纯select的时候使用/*+ DRIVING_SITE(A) */提示，Oracle可以正常的在源库执行后返回结果，但是当加入insert into之后情况就变了，不仅仅执行计划的cost值变大，执行时间比原来长了许多。
+反复测试了很多的hint，在加入insert into之后都是无解。">
+  
+    <link rel="alternative" href="/atom.xml" title="dboOodb" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/avatar/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar/avatar_photo.png" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">dboOodb</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">喵喵喵喵～</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>Menu</li>
+						<li>Tags</li>
+						
+						
+						<li>About</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+							<li><a href="/tags/心情">心情</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="#" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="#" title="weibo">weibo</a>
+					        
+								<a class="zhihu" target="_blank" href="#" title="zhihu">zhihu</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/Oracle/" style="font-size: 15px;">Oracle</a> <a href="/tags/乱写/" style="font-size: 10px;">乱写</a> <a href="/tags/心情/" style="font-size: 20px;">心情</a> <a href="/tags/胡说八道/" style="font-size: 10px;">胡说八道</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">Say nothing!</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">dboOodb</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar/avatar_photo.png" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">dboOodb</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">喵喵喵喵～</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+					<li><a href="/tags/心情">心情</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="#" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="#" title="weibo">weibo</a>
+			        
+						<a class="zhihu" target="_blank" href="#" title="zhihu">zhihu</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-insert-select-from-dblink" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2013/03/27/insert-select-from-dblink/" class="article-date">
+  	<time datetime="2013-03-27T03:06:49.000Z" itemprop="datePublished">2013-03-27</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      大数据量跨库查询优化
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Oracle/">Oracle</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近负责一个大数量采集的项目开发，其中面临的最大问题是跨库查询插入性能比普通查询差不止一个数量级。  </p>
+<p>在单纯select的时候使用/*+ DRIVING_SITE(A) */提示，Oracle可以正常的在源库执行后返回结果，但是当加入insert into之后情况就变了，不仅仅执行计划的cost值变大，执行时间比原来长了许多。</p>
+<p>反复测试了很多的hint，在加入insert into之后都是无解。</p>
+<p>这就尴尬了，全部采集只有支持两种方式： </p>
+<ul>
+<li>db_link  </li>
+<li>文件</li>
+</ul>
+<a id="more"></a>
+<p>文件的方式需要编写解析程序，入库，一系列操作太过麻烦，还是考虑从SQL优化的角度解决吧。  </p>
+<p>既然加上insert语句之后无法走索引，那么可以曲线救国，通过存储过程，先select数据回来，转换为批量插入就可以搞定。 </p>
+<p>实现代码：</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div></pre></td><td class="code"><pre><div class="line">CREATE <span class="keyword">OR</span> REPLACE <span class="keyword">PROCEDURE</span> <span class="title">INSERT_DATA_FROM_REMOTE</span> ( v_target_table  VARCHAR2,</div><div class="line">                                                      v_target_column VARCHAR2 DEFAULT '$NULL</div><div class="line">,</div><div class="line">                                                      v_sql_to_run    VARCHAR2,</div><div class="line">                                                      v_commit_after  NUMBER DEFAULT 10000,</div><div class="line">                                                      v_auto_commit   BOOLEAN DEFAULT FALSE) <span class="keyword">IS</span></div><div class="line">  <span class="comment">-- Created : dboOodb, 2013-03-20 16:38:00</span></div><div class="line"></div><div class="line">v_limit_sql1    VARCHAR2(<span class="number">300</span>) := <span class="string">' '</span>;</div><div class="line">v_limit_sql2    VARCHAR2(<span class="number">900</span>) := <span class="string">' '</span>;</div><div class="line">v_plsql_to_run  CLOB;</div><div class="line">v_rowtype       VARCHAR2(<span class="number">32767</span>);</div><div class="line">v_typename      VARCHAR2(<span class="number">50</span>) := <span class="symbol">'RecTyp</span>';</div><div class="line">v_variables     VARCHAR2(<span class="number">32767</span>);</div><div class="line">v_varname       VARCHAR2(<span class="number">32767</span>) := <span class="symbol">'rec</span>';</div><div class="line">v_valuelist     VARCHAR2(<span class="number">32767</span>);</div><div class="line">v_col_cnt       NUMBER;</div><div class="line">v_return        VARCHAR2(<span class="number">30</span>) := CHR(<span class="number">13</span>) || CHR(<span class="number">10</span>);</div><div class="line">v_spos          NUMBER :=<span class="number">1</span>;</div><div class="line">v_epos          NUMBER;</div><div class="line">v_column        VARCHAR2(<span class="number">255</span>);</div><div class="line">v_column_list   VARCHAR2(<span class="number">32767</span>);</div><div class="line">v_rec           varchar2(<span class="number">32767</span>);</div><div class="line"><span class="keyword">BEGIN</span></div><div class="line"></div><div class="line"><span class="keyword">IF</span> NVL(v_commit_after,<span class="number">0</span>) &lt;&gt; <span class="number">0</span> <span class="keyword">and</span> v_auto_commit <span class="keyword">THEN</span></div><div class="line"></div><div class="line">  v_limit_sql1:=  '  LIMIT ' || TO_CHAR(v_commit_after) ;</div><div class="line"></div><div class="line">  v_limit_sql2:=  '   <span class="keyword">IF</span> <span class="keyword">MOD</span>(v_number_of_rows, ' || TO_CHAR(v_commit_after) || ' ) = <span class="number">0</span> <span class="keyword">THEN</span>     ' ||</div><div class="line">                  '       COMMIT;                                                               ' ||</div><div class="line">                  '   <span class="keyword">END</span> <span class="keyword">IF</span>;                                                                   ' ;</div><div class="line"><span class="keyword">END</span> <span class="keyword">IF</span>;</div><div class="line"></div><div class="line"><span class="keyword">IF</span> v_target_column = '$NULL <span class="keyword">THEN</span></div><div class="line"></div><div class="line">  v_rowtype:=   ' <span class="keyword">TYPE</span> <span class="type">RecTyp </span><span class="keyword">IS</span> TABLE <span class="keyword">OF</span> ' || v_target_table || '%ROWTYPE;                   ';</div><div class="line">  v_variables:= ' rec1 RecTyp;                                                                 ';</div><div class="line">  v_valuelist:= ' rec1(i);   ';</div><div class="line">  v_column_list:= '';</div><div class="line">  v_rec:= <span class="symbol">'rec1</span>';</div><div class="line"><span class="keyword">ELSE</span></div><div class="line"></div><div class="line">  v_column_list:= <span class="string">'('</span>||v_target_column||<span class="string">')'</span>;</div><div class="line">  v_col_cnt:= (LENGTH(v_target_column)-LENGTH(REPLACE(v_target_column,<span class="string">','</span>)))/LENGTH(<span class="string">','</span>);</div><div class="line">  <span class="keyword">IF</span> v_col_cnt &gt; <span class="number">0</span> <span class="keyword">THEN</span></div><div class="line">      <span class="keyword">FOR</span> i <span class="keyword">IN</span> <span class="number">1</span>..v_col_cnt+<span class="number">1</span> <span class="keyword">LOOP</span></div><div class="line">        <span class="keyword">IF</span> i = v_col_cnt + <span class="number">1</span> <span class="keyword">THEN</span></div><div class="line">          v_column:= TRIM(SUBSTR(v_target_column, v_spos));</div><div class="line">        <span class="keyword">ELSE</span></div><div class="line">          v_epos:= INSTR(v_target_column,<span class="string">','</span>,<span class="number">1</span>,i);</div><div class="line">          v_column:= TRIM(SUBSTR(v_target_column, v_spos, v_epos - v_spos));</div><div class="line">        <span class="keyword">END</span> <span class="keyword">IF</span>;</div><div class="line">        v_rowtype:= v_rowtype||' <span class="keyword">TYPE</span> <span class="type">RecTyp'||i||' </span><span class="keyword">IS</span> TABLE <span class="keyword">OF</span> '||TRIM(v_target_table)||<span class="string">'.'</span>||v_column||'%<span class="keyword">TYPE</span>;'||v_return;</div><div class="line">        v_variables:= v_variables||v_varname||i||<span class="string">' '</span>||<span class="symbol">'RecTyp</span>'||i||<span class="string">';'</span>||v_return;</div><div class="line">        v_valuelist:= v_valuelist||v_varname||i||'(i),';</div><div class="line">        v_rec:= v_rec||v_varname||i||<span class="string">','</span>;</div><div class="line">        v_spos:= v_epos + <span class="number">1</span>;</div><div class="line">      <span class="keyword">END</span> <span class="keyword">LOOP</span>;</div><div class="line">      v_valuelist:= <span class="string">'('</span> || rtrim(v_valuelist,<span class="string">','</span>) || ');';</div><div class="line">      v_rec:= rtrim(v_rec,<span class="string">','</span>);</div><div class="line">  <span class="keyword">ELSE</span></div><div class="line">      v_rowtype:= ' <span class="keyword">TYPE</span> <span class="type">RecTyp </span><span class="keyword">IS</span> TABLE <span class="keyword">OF</span> '||TRIM(v_target_table)||<span class="string">'.'</span>||v_target_column||'%<span class="keyword">TYPE</span>;';</div><div class="line">      v_variables:= ' rec1 RecTyp;';</div><div class="line">      v_valuelist:= ' ( rec1(i) );';</div><div class="line">      v_rec:= <span class="symbol">'rec1</span>';</div><div class="line">  <span class="keyword">END</span> <span class="keyword">IF</span>;</div><div class="line"></div><div class="line"><span class="keyword">END</span> <span class="keyword">IF</span>;</div><div class="line"></div><div class="line">v_plsql_to_run:=  '                                                                                                  ' ||</div><div class="line">                  <span class="symbol">'DECLARE</span>                                                                                           ' ||</div><div class="line">                  ' v_number_of_rows number:=<span class="number">0</span>;                                                                      ' ||</div><div class="line">                  '                                                                                                  ' ||</div><div class="line">                  ' <span class="keyword">TYPE</span> <span class="type">MyType </span><span class="keyword">IS</span> REF CURSOR;                                                                       ' ||</div><div class="line">                  ' CV MyType;                                                                                       ' ||/*</div><div class="line">                  ' <span class="keyword">TYPE</span> <span class="type">RecTyp </span><span class="keyword">IS</span> TABLE <span class="keyword">OF</span> ' || v_target_table || '%ROWTYPE;                                        ' ||</div><div class="line">                  ' rec RecTyp;                                                                                      ' ||*/</div><div class="line">                  v_rowtype   ||</div><div class="line">                  v_variables ||</div><div class="line">                  '                                                                                                  ' ||</div><div class="line">                  <span class="symbol">'BEGIN</span>                                                                                             ' ||</div><div class="line">                  '                                                                                                  ' ||</div><div class="line">                  <span class="symbol">'OPEN</span> CV <span class="keyword">FOR</span>                                                                                       ' ||</div><div class="line">                  '    ' || REPLACE( v_sql_to_run, <span class="string">';'</span>, <span class="string">' '</span> )  || ' ;                                                ' ||</div><div class="line">                  ' <span class="keyword">LOOP</span>                                                                                             ' ||</div><div class="line">                  '     FETCH CV BULK COLLECT INTO ' || v_rec || v_limit_sql1 || ';                                  ' ||</div><div class="line">                  '     FORALL i <span class="keyword">IN</span> <span class="number">1</span>..rec1.COUNT                                                                     ' ||</div><div class="line">                  '         INSERT /*+APPEND */ INTO ' || v_target_table || v_column_list || ' VALUES ' || v_valuelist ||</div><div class="line">                  '         v_number_of_rows  := v_number_of_rows + SQL%ROWCOUNT;                                    ' ||</div><div class="line">                  <span class="string">' '</span> || v_limit_sql2 || '                                                                           ' ||</div><div class="line">                  '     <span class="keyword">EXIT</span> <span class="keyword">WHEN</span> CV%NOTFOUND;                                                                       ' ||</div><div class="line">                  '                                                                                                  ' ||</div><div class="line">                  ' <span class="keyword">END</span> <span class="keyword">LOOP</span>;                                                                                        ' ||</div><div class="line">                  /*' COMMIT;                                                                                          ' ||*/</div><div class="line">                  ' CLOSE CV;                                                                                        ' ||</div><div class="line">                  <span class="symbol">'END</span>;                                                                                              ';</div><div class="line"></div><div class="line">EXECUTE IMMEDIATE v_plsql_to_run;</div><div class="line"></div><div class="line"><span class="keyword">IF</span> NVL(v_commit_after,<span class="number">0</span>) &lt;&gt; <span class="number">0</span> <span class="keyword">and</span> v_auto_commit <span class="keyword">THEN</span></div><div class="line">   COMMIT;</div><div class="line"><span class="keyword">END</span> <span class="keyword">IF</span>;</div><div class="line"></div><div class="line"><span class="keyword">END</span>;</div></pre></td></tr></table></figure>
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2013/06/09/why-sorry-for-me/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          愿你此生无悔
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2012/12/10/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Hello world!</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2016 dboOodb
+    	</div>
+      	<div class="footer-right">
+      	</div>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="//7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>
