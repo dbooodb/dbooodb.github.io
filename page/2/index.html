@@ -182,6 +182,73 @@
 
       <div class="body-wrap">
   
+    <article id="post-insert-select-from-dblink" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2013/03/27/insert-select-from-dblink/" class="article-date">
+  	<time datetime="2013-03-27T03:06:49.000Z" itemprop="datePublished">2013-03-27</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/03/27/insert-select-from-dblink/">大数据量跨库查询优化</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近负责一个大数量采集的项目开发，其中面临的最大问题是跨库查询插入性能比普通查询差不止一个数量级。  </p>
+<p>在单纯select的时候使用/*+ DRIVING_SITE(A) */提示，Oracle可以正常的在源库执行后返回结果，但是当加入insert into之后情况就变了，不仅仅执行计划的cost值变大，执行时间比原来长了许多。</p>
+<p>反复测试了很多的hint，在加入insert into之后都是无解。</p>
+<p>这就尴尬了，全部采集只有支持两种方式： </p>
+<ul>
+<li>db_link  </li>
+<li>文件</li>
+</ul>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Oracle/">Oracle</a></li></ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a  href="/2013/03/27/insert-select-from-dblink/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -250,7 +317,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2016 dboOodb
+    		&copy; 2017 dboOodb
     	</div>
       	<div class="footer-right">
       	</div>
