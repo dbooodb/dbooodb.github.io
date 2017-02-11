@@ -182,66 +182,6 @@
 
       <div class="body-wrap">
   
-    <article id="post-my2016" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2017/01/07/my2016/" class="article-date">
-  	<time datetime="2017-01-06T17:39:01.000Z" itemprop="datePublished">2017-01-07</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/01/07/my2016/">空白 | 我的2016</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>忽然间就2017了，仿佛我在游戏里不小心按了闪现术过来一样。<br>如同看着镜子，对面忙忙碌碌，这边也是忙忙碌碌。</p>
-<p>对面与我之间发生过什么？<br>……<br>我一片空白。<br>就像什么都没有发生过一样。  </p>
-<p>起点亦是终点，大抵说的就是2016的我吧。<br>只记得病了一场，再也回不到过去了。<br>……   </p>
-<p>人生就是这样一笔圆，起点亦是终点，两点最终都会相遇，但终究不会重合。<br>不忘初心，不负当下。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/心情/">心情</a></li></ul>
-	</div>
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
     <article id="post-Through-the-network-of-vpn" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -666,6 +606,73 @@
       
         <p class="article-more-link">
           <a  href="/2013/06/09/why-sorry-for-me/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-insert-select-from-dblink" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2013/03/27/insert-select-from-dblink/" class="article-date">
+  	<time datetime="2013-03-27T03:06:49.000Z" itemprop="datePublished">2013-03-27</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/03/27/insert-select-from-dblink/">大数据量跨库查询优化</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近负责一个大数量采集的项目开发，其中面临的最大问题是跨库查询插入性能比普通查询差不止一个数量级。  </p>
+<p>在单纯select的时候使用/*+ DRIVING_SITE(A) */提示，Oracle可以正常的在源库执行后返回结果，但是当加入insert into之后情况就变了，不仅仅执行计划的cost值变大，执行时间比原来长了许多。</p>
+<p>反复测试了很多的hint，在加入insert into之后都是无解。</p>
+<p>这就尴尬了，全部采集只有支持两种方式： </p>
+<ul>
+<li>db_link  </li>
+<li>文件</li>
+</ul>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Oracle/">Oracle</a></li></ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a  href="/2013/03/27/insert-select-from-dblink/#more">more >></a>
         </p>
       
       <div class="clearfix"></div>
